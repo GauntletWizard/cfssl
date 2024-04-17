@@ -110,6 +110,8 @@ type SigningProfile struct {
 	// linting.
 	ExcludeLintSources []string `json:"ignored_lint_sources"`
 
+	Constraints []NameConstraint `json:"name_constraints"`
+
 	Policies                    []CertificatePolicy
 	Expiry                      time.Duration
 	Backdate                    time.Duration
@@ -128,6 +130,12 @@ type SigningProfile struct {
 	// ExcludeLints or ExcludeLintSources are set then this registry will be
 	// filtered in populate() to exclude the named lints and lint sources.
 	LintRegistry lint.Registry
+}
+
+type NameConstraint struct {
+	Type string `json:"type"`
+	Name string `json:"name"`
+	Deny bool   `json:"deny"`
 }
 
 // UnmarshalJSON unmarshals a JSON string into an OID.
