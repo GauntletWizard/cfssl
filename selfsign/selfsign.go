@@ -124,6 +124,8 @@ func Sign(priv crypto.Signer, csrPEM []byte, profile *config.SigningProfile) ([]
 	template.IsCA = profile.CAConstraint.IsCA
 	template.SubjectKeyId = pubhash.Sum(nil)
 
+	profile.AddNameConstraints(template)
+
 	if ocspURL != "" {
 		template.OCSPServer = []string{ocspURL}
 	}

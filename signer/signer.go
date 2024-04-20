@@ -363,6 +363,7 @@ func FillTemplate(template *x509.Certificate, defaultProfile, profile *config.Si
 		template.URIs = nil
 	}
 	template.SubjectKeyId = ski
+	profile.AddNameConstraints(template)
 
 	if ocspURL != "" {
 		template.OCSPServer = []string{ocspURL}

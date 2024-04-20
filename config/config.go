@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net"
 	"os"
 	"regexp"
 	"strconv"
@@ -136,6 +137,63 @@ type NameConstraint struct {
 	Type string `json:"type"`
 	Name string `json:"name"`
 	Deny bool   `json:"deny"`
+}
+
+func (p *SigningProfile) checkNameConstraints() error {
+	for _, nc := range p.Constraints {
+		switch nc.Type {
+		case "ip":
+			_, _, err := net.ParseCIDR(nc.Name)
+			if err != nil {
+				return err
+			}
+		case "dns", "email", "URI":
+			continue
+		default:
+			return fmt.Errorf("Invalid Name Constraint Type: %s", nc.Type)
+		}
+	}
+	return nil
+}
+
+// AddNameConstraints modifies an x509.Certificate to add all of the
+func (p *SigningProfile) AddNameConstraints(template *x509.Certificate) {
+	for _, nc := range p.Constraints {
+		template.PermittedDNSDomainsCritical = true
+
+		switch nc.Type {
+		case "dns":
+			if nc.Deny {
+				template.ExcludedDNSDomains = append(template.ExcludedDNSDomains, nc.Name)
+			} else {
+				template.PermittedDNSDomains = append(template.PermittedDNSDomains, nc.Name)
+			}
+		case "ip":
+			_, cidr, err := net.ParseCIDR(nc.Name)
+			if err != nil {
+				// TODO: Error handle here? We should already have checked in checkNameConstraints
+			}
+			if nc.Deny {
+				template.ExcludedIPRanges = append(template.ExcludedIPRanges, cidr)
+			} else {
+				template.PermittedIPRanges = append(template.PermittedIPRanges, cidr)
+			}
+		case "email":
+			if nc.Deny {
+				template.ExcludedEmailAddresses = append(template.ExcludedEmailAddresses, nc.Name)
+			} else {
+				template.PermittedEmailAddresses = append(template.PermittedEmailAddresses, nc.Name)
+			}
+		case "uri":
+			if nc.Deny {
+				template.ExcludedURIDomains = append(template.ExcludedURIDomains, nc.Name)
+			} else {
+				template.PermittedURIDomains = append(template.PermittedURIDomains, nc.Name)
+			}
+		case "default":
+			// TODO: Error handle here?
+		}
+	}
 }
 
 // UnmarshalJSON unmarshals a JSON string into an OID.

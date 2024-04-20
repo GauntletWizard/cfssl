@@ -2,6 +2,9 @@
     "signing": {
         "default": {
             "expiry": "168h",
+                "name_constraints": [
+                  {"type": "dns", "name": "cloudflare.com.", "foo": "bar"}
+                ],
                 "usages": [
                     "signing",
                     "key encipherment",
