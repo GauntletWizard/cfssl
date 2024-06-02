@@ -1,29 +1,37 @@
 {
-    "signing": {
-        "default": {
-            "expiry": "168h",
-                "name_constraints": [
-                  {"type": "dns", "name": "cloudflare.com.", "foo": "bar"}
-                ],
-                "usages": [
-                    "signing",
-                    "key encipherment",
-                    "server auth"
-                ]
-        },
-        "profiles": {
-            "www": {
-                "expiry": "168h",
-                "usages": [
-                    "signing",
-                    "key encipherment",
-                    "server auth"
-                ],
-                "name_whitelist": "^.*\\.cloudflare.com$",
-                "name_constraints": [
-                  {"type": "dns", "name": "cloudflare.com.", "foo": "bar"}
-                ]
-            }
+  "signing": {
+    "default": {
+      "expiry": "168h",
+      "name_constraints": [
+        {
+          "type": "dns",
+          "name": "cloudflare.com.",
+          "foo": "bar"
         }
+      ],
+      "usages": [
+        "signing",
+        "key encipherment",
+        "server auth"
+      ]
+    },
+    "profiles": {
+      "www": {
+        "expiry": "168h",
+        "usages": [
+          "signing",
+          "key encipherment",
+          "server auth"
+        ],
+        "name_whitelist": "^.*\\.cloudflare.com$",
+        "name_constraints": [
+          {
+            "type": "dns",
+            "name": "cloudflare.com.",
+            "foo": "bar"
+          }
+        ]
+      }
     }
+  }
 }
